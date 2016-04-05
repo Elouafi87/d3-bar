@@ -168,7 +168,7 @@ export default class BarChart {
         .call(this.yAxis)
     }
 
-    this.xBisect = d3.bisector(d => d.time).left
+    this.xBisect = d3.bisector(d => d.bin).left
   }
 
   /**
@@ -179,7 +179,7 @@ export default class BarChart {
     const { chart, x, y, xAxis, yAxis, nice, ease, color } = this
 
     const yExtent = d3.extent(data, d => d.value)
-    const xd = x.domain(d3.extent(data, d => d.time))
+    const xd = x.domain(d3.extent(data, d => d.bin))
     const yd = y.domain(yExtent)
 
     if (color) color.domain(yExtent)
@@ -218,7 +218,7 @@ export default class BarChart {
 
     // update
     column.transition().ease(ease)
-      .attr('x', d => x(d.time))
+      .attr('x', d => x(d.bin))
       .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
       .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
       .attr('width', barWidth)
@@ -236,7 +236,7 @@ export default class BarChart {
 
     // update
     bar.transition().ease(ease)
-      .attr('x', d => x(d.time))
+      .attr('x', d => x(d.bin))
       .attr('y', d => y(d.value))
       .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
       .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
@@ -256,7 +256,7 @@ export default class BarChart {
       .attr('class', 'overlay')
 
     // update
-    overlay.attr('x', d => x(d.time))
+    overlay.attr('x', d => x(d.bin))
       .attr('width', width)
       .attr('height', h)
       .style('fill', 'transparent')
@@ -266,7 +266,8 @@ export default class BarChart {
   }
 
   /**
-   * Render the chart against the given `data`.
+   * Render the chart against the given `data` which should be
+   * an array of objects with `bin` and `value` properties.
    */
 
   render(data, options = {}) {
