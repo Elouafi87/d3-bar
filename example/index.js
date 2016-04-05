@@ -54,6 +54,7 @@ class App extends Component {
       target: this.refs.d,
       mouseover: tip.show,
       mouseout: tip.hide,
+      yDomain: [0, 10000],
       barPadding: 5,
       type: 'rect',
       axis: false

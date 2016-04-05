@@ -33,6 +33,12 @@ const defaults = {
   // nice round values for axis
   nice: false,
 
+  // custom x domain
+  xDomain: null,
+
+  // custom y domain
+  yDomain: null,
+
   // color range
   color: null,
 
@@ -176,10 +182,10 @@ export default class BarChart {
    */
 
   renderAxis(data, options) {
-    const { chart, x, y, xAxis, yAxis, nice, ease, color } = this
+    const { chart, x, y, xAxis, yAxis, nice, ease, color, xDomain, yDomain } = this
 
-    const yExtent = d3.extent(data, d => d.value)
-    const xd = x.domain(d3.extent(data, d => d.bin))
+    const yExtent = yDomain || d3.extent(data, d => d.value)
+    const xd = x.domain(xDomain || d3.extent(data, d => d.bin))
     const yd = y.domain(yExtent)
 
     if (color) color.domain(yExtent)
