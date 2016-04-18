@@ -207,7 +207,7 @@ export default class BarChart {
    * Render bars.
    */
 
-  renderBars(data) {
+  renderBars(data, { animate }) {
     const { chart, x, y, ease, barPadding, type, color } = this
     const [w, h] = this.dimensions()
 
@@ -220,10 +220,10 @@ export default class BarChart {
 
     // enter
     column.enter().append('rect')
-      .attr('class', 'column')
+      .attr('class', 'column');
 
     // update
-    column.transition().ease(ease)
+    (animate ? column.transition().ease(ease) : column)
       .attr('x', d => x(d.bin))
       .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
       .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
@@ -238,10 +238,10 @@ export default class BarChart {
 
     // enter
     bar.enter().append('rect')
-      .attr('class', 'bar')
+      .attr('class', 'bar');
 
     // update
-    bar.transition().ease(ease)
+    (animate ? bar.transition().ease(ease) : bar)
       .attr('x', d => x(d.bin))
       .attr('y', d => y(d.value))
       .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
@@ -286,9 +286,7 @@ export default class BarChart {
    * Update the chart against the given `data`.
    */
 
-  update(data) {
-    this.render(data, {
-      animate: true
-    })
+  update(data, options = { animate: true }) {
+    this.render(data, options)
   }
 }

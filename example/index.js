@@ -73,7 +73,7 @@ class App extends Component {
   changeData = _ => {
     const n = Math.max(15, Math.random() * 30 | 0)
     this.a.update(gen(n))
-    this.b.update(gen(10))
+    this.b.update(gen(10), { animate: false })
     this.c.update(gen(24))
     this.d.update(gen(24))
   }
