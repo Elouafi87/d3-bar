@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import Chart from '../index'
 import Tip from 'd3-tipy'
 import offset from 'offset'
-import d3 from 'd3'
+import * as d3 from 'd3'
 
 const gen = n => {
   const data = []
@@ -22,7 +22,7 @@ const gen = n => {
 class App extends Component {
   componentDidMount() {
     const tip = new Tip({
-      format: d3.format(',')
+      format: d => d3.format(',')(d.value)
     })
 
     this.a = new Chart({
@@ -46,7 +46,7 @@ class App extends Component {
       tickSize: 3,
       mouseover: tip.show,
       mouseout: tip.hide,
-      ease: 'elastic',
+      ease: 'easeElastic',
       color: ['RGB(0, 177, 240)', 'rgb(243, 43, 101)']
     })
 
