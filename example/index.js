@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import Chart from '../index'
 import Tip from 'd3-tipy'
 import offset from 'offset'
-import d3 from 'd3'
+import * as d3 from 'd3'
 
 const gen = n => {
   const data = []

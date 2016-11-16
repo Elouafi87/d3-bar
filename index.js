@@ -1,5 +1,5 @@
 
-import d3 from 'd3'
+import * as d3 from 'd3'
 
 /**
  * Default config.
@@ -46,7 +46,7 @@ const defaults = {
   colorInterpolate: d3.interpolateHcl,
 
   // easing function for transitions
-  ease: 'linear',
+  ease: 'easeLinear',
 
   // type of bar: rounded-rect, rect
   type: 'rounded',
@@ -137,26 +137,24 @@ export default class BarChart {
         .on('mouseleave', _ => this.onMouseLeave())
 
     if (color) {
-      this.color = d3.scale.linear()
+      this.color = d3.scaleLinear()
         .interpolate(colorInterpolate)
         .range(color)
     }
 
-    this.x = d3.time.scale()
+    this.x = d3.scaleTime()
       .range([0, w])
 
-    this.y = d3.scale.linear()
+    this.y = d3.scaleLinear()
       .range([h, 0])
 
-    this.xAxis = d3.svg.axis()
-      .orient('bottom')
+    this.xAxis = d3.axisBottom()
       .scale(this.x)
       .ticks(5)
       .tickPadding(8)
       .tickSize(tickSize)
 
-    this.yAxis = d3.svg.axis()
-      .orient('left')
+    this.yAxis = d3.axisLeft()
       .scale(this.y)
       .ticks(3)
       .tickPadding(8)
@@ -175,6 +173,8 @@ export default class BarChart {
     }
 
     this.xBisect = d3.bisector(d => d.bin).left
+
+    this.ease = d3[this.ease]
   }
 
   /**
@@ -210,6 +210,7 @@ export default class BarChart {
   renderBars(data, { animate }) {
     const { chart, x, y, ease, barPadding, type, color } = this
     const [w, h] = this.dimensions()
+    const ms = animate ? 300 : 0
 
     const width = w / data.length
     const barWidth = width - barPadding
@@ -218,17 +219,16 @@ export default class BarChart {
     const column = chart.selectAll('.column')
         .data(data)
 
-    // enter
-    column.enter().append('rect')
-      .attr('class', 'column');
-
-    // update
-    (animate ? column.transition().ease(ease) : column)
-      .attr('x', d => x(d.bin))
-      .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
-      .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
-      .attr('width', barWidth)
-      .attr('height', h)
+    column.enter() // enter
+      .append('rect')
+        .attr('class', 'column')
+      .merge(column) // update
+        .transition().ease(ease).duration(ms)
+          .attr('x', d => x(d.bin))
+          .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
+          .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
+          .attr('width', barWidth)
+          .attr('height', h)
 
     // exit
     column.exit().remove()
@@ -236,18 +236,17 @@ export default class BarChart {
     const bar = chart.selectAll('.bar')
       .data(data)
 
-    // enter
-    bar.enter().append('rect')
-      .attr('class', 'bar');
-
-    // update
-    (animate ? bar.transition().ease(ease) : bar)
-      .attr('x', d => x(d.bin))
-      .attr('y', d => y(d.value))
-      .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
-      .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
-      .attr('width', barWidth)
-      .attr('height', d => h - y(d.value))
+    bar.enter() // enter
+      .append('rect')
+        .attr('class', 'bar')
+      .merge(bar) // update
+        .transition().ease(ease).duration(ms)
+          .attr('x', d => x(d.bin))
+          .attr('y', d => y(d.value))
+          .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
+          .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
+          .attr('width', barWidth)
+          .attr('height', d => h - y(d.value))
 
     if (color) bar.style('fill', d => color(d.value))
 
