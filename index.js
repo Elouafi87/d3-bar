@@ -182,7 +182,7 @@ export default class BarChart {
    */
 
   renderAxis(data, options) {
-    const { chart, x, y, xAxis, yAxis, nice, ease, color, xDomain, yDomain } = this
+    const { chart, x, y, xAxis, yAxis, nice, t, color, xDomain, yDomain } = this
 
     const yExtent = yDomain || d3.extent(data, d => d.value)
     const xd = x.domain(xDomain || d3.extent(data, d => d.bin))
@@ -195,10 +195,7 @@ export default class BarChart {
       yd.nice()
     }
 
-    const c = options.animate
-      ? chart.transition().ease(ease)
-      : chart
-
+    const c = chart.transition(t)
     c.select('.x.axis').call(xAxis)
     c.select('.y.axis').call(yAxis)
   }
@@ -208,9 +205,8 @@ export default class BarChart {
    */
 
   renderBars(data, { animate }) {
-    const { chart, x, y, ease, barPadding, type, color } = this
+    const { chart, x, y, t, barPadding, type, color } = this
     const [w, h] = this.dimensions()
-    const ms = animate ? 300 : 0
 
     const width = w / data.length
     const barWidth = width - barPadding
@@ -223,7 +219,7 @@ export default class BarChart {
       .append('rect')
         .attr('class', 'column')
       .merge(column) // update
-        .transition().ease(ease).duration(ms)
+        .transition(t)
           .attr('x', d => x(d.bin))
           .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
           .attr('ry', type == 'rounded' ? barWidth / 2 : 0)
@@ -240,7 +236,7 @@ export default class BarChart {
       .append('rect')
         .attr('class', 'bar')
       .merge(bar) // update
-        .transition().ease(ease).duration(ms)
+        .transition(t)
           .attr('x', d => x(d.bin))
           .attr('y', d => y(d.value))
           .attr('rx', type == 'rounded' ? barWidth / 2 : 0)
@@ -277,6 +273,11 @@ export default class BarChart {
 
   render(data, options = {}) {
     this.data = data
+
+    this.t = d3.transition()
+      .duration(options.animate ? 300 : 0)
+      .ease(this.ease)
+
     this.renderAxis(data, options)
     this.renderBars(data, options)
   }
