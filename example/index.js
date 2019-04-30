@@ -3,20 +3,19 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Chart from '../index'
 import Tip from 'd3-tipy'
-import offset from 'offset'
 import * as d3 from 'd3'
 
 const gen = n => {
-  const data = []
-
-  for (var i = n; i; i--) {
-    data.push({
-      bin: new Date(Date.now() - (i * 3600000)),
-      value: Math.max(250, Math.random() * 3000 | 0)
-    })
+  const series = [];
+  for (var i = 0, variance = 0, value; i < n; i++) {
+      variance += (Math.random() - 0.5) / 10;
+      const value = Math.abs(Math.cos(i / 100) + variance)
+      series.push({
+        bin: new Date(Date.now() - (i * 3600000)),
+        value
+      }); 
   }
-
-  return data
+  return series
 }
 
 class App extends Component {
